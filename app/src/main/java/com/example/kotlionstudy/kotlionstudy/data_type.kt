@@ -15,6 +15,7 @@ fun main(args: Array<String>) {
     opreator()
     char()
     arr()
+    string()
 }
 
 /**
@@ -90,7 +91,17 @@ fun add3(num1: Int, num2: Int): Int {
 fun arr() {
     val a: Array<Int> = arrayOf(-1, 2, -3)
     val maxBy = a.maxBy { it.absoluteValue }
-    println("char():maxBy=$maxBy")
+    println("arr():maxBy=$maxBy")
+    val fold = a.fold(0, { acc: Int, i: Int -> acc + i })
+    println("arr():fold=$fold")
+    a[0] = 7
+    val map = a.map { it.absoluteValue }
+    map.forEach { println(it) }
+}
+
+fun string() {
+    val text = " |哈哈哈|哈哈哈哈哈哈"
+    println("string():text=${text.trimMargin()}")//删除多余的空白,默认 | 用作边界前缀
 }
 
 
