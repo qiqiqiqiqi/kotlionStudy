@@ -5,7 +5,8 @@ import kotlin.math.absoluteValue
 /**
  * Created by BaoQi
  * Date : 2020/12/20
- * Des:Kotlin 的基本数值类型包括 Byte、Short、Int、Long、Float、Double 等。
+ * Des:数据类型
+ * Kotlin 的基本数值类型包括 Byte、Short、Int、Long、Float、Double 等。
  * 不同于 Java 的是，字符不属于数值类型，是一个独立的数据类型。
  */
 fun main(args: Array<String>) {
@@ -84,9 +85,6 @@ fun char() {
     println("char():a.toInt()=${a.toInt()}")// Char.toInt()对应的是编码的值
 }
 
-fun add3(num1: Int, num2: Int): Int {
-    return num1 + num2
-}
 
 fun arr() {
     val a: Array<Int> = arrayOf(-1, 2, -3)
