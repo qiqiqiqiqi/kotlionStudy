@@ -60,7 +60,6 @@ fun typeConvert() {
     val a: Int = 1
     // val b: Long = a// error
     val b: Long = a.toLong()
-
     val c: Int = a + 0b0000_0001//自动转为范围大的类型 Int +byte-> Int
     val d: Long = a + 1L
 }

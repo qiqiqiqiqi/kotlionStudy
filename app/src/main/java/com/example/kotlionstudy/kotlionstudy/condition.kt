@@ -1,5 +1,8 @@
 package com.example.kotlionstudy.kotlionstudy
 
+import android.view.View
+import kotlin.properties.ReadOnlyProperty
+
 /**
  * Created by BaoQi
  * Date : 2020/12/24
@@ -8,6 +11,7 @@ package com.example.kotlionstudy.kotlionstudy
 fun main(args: Array<String>) {
     testIfElse()
     testWhen()
+
 }
 
 fun testIfElse() {
