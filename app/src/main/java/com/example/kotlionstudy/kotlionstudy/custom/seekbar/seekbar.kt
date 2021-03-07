@@ -31,8 +31,16 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     private val gestureDetector: GestureDetector
     private var mRadius by Delegates.notNull<Float>()
     private var mAngel = 135.0
-    private lateinit var canvasBitmap: Bitmap
-    private lateinit var bitmapCanvas: Canvas
+    private val canvasBitmap by lazy {
+        Bitmap.createBitmap(
+            measuredWidth,
+            measuredHeight,
+            Bitmap.Config.ARGB_8888
+        )
+    }
+    private val bitmapCanvas by lazy {
+        Canvas(canvasBitmap)
+    }
 
     private val mRingColors: IntArray = intArrayOf(
         Color.argb(0xFF, 0x00, 0xAD, 0xEF),
@@ -81,14 +89,8 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        canvasBitmap = Bitmap.createBitmap(
-            measuredWidth,
-            measuredHeight,
-            Bitmap.Config.ARGB_8888
-        )
-
-        bitmapCanvas = Canvas(canvasBitmap)
+        bitmapCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        bitmapCanvas.save()
         bitmapCanvas.translate(
             mCenterPoint.x,
             mCenterPoint.y
@@ -100,6 +102,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         drawPointer(bitmapCanvas, canvasBitmap)
         canvas.drawBitmap(canvasBitmap, 0f, 0f, null)
         canvas.restore()
+        bitmapCanvas.restore()
     }
 
     private fun drawRing(canvas: Canvas) {
