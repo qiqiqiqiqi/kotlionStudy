@@ -43,6 +43,7 @@ class ChinesePerson : BasePerson() {
      */
     class Nested {
         fun nested() {
+            //没有外部类的引用this@ChinesePerson
             println("Nested--nested():测试嵌套类的使用")
 
         }

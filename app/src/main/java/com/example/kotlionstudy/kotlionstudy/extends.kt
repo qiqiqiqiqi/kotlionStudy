@@ -3,7 +3,7 @@ package com.example.kotlionstudy.kotlionstudy
 /**
  * @author BaoQi
  * Date : 2021/2/28
- * Des:
+ * Des: 继承
  */
 fun main() {
     val personA = PersonA("dd")

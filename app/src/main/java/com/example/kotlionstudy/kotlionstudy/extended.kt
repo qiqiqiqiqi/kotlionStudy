@@ -3,7 +3,7 @@ package com.example.kotlionstudy.kotlionstudy
 /**
  * @author BaoQi
  * Date : 2021/3/1
- * Des:
+ * Des:扩展
  */
 fun main(args: Array<String>) {
     val baseF = BaseF()

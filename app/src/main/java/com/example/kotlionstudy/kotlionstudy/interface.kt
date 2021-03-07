@@ -3,7 +3,7 @@ package com.example.kotlionstudy.kotlionstudy
 /**
  * @author BaoQi
  * Date : 2021/3/1
- * Des:
+ * Des:接口
  */
 fun main(args: Array<String>) {
     BaseImpl()
