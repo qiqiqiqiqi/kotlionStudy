@@ -54,10 +54,10 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     init {
         mPaint.isAntiAlias = true
         mPaint.strokeCap = Paint.Cap.ROUND
-        mPaint.textSize = 36f
+        mPaint.textSize = sp2px(18f)
         val typeFace = Typeface.createFromAsset(context.assets, "fonts/digital.ttf")
         mShowPaint.typeface = typeFace
-        mShowPaint.textSize = 156f
+        mShowPaint.textSize = sp2px(64f)
         mShowPaint.isAntiAlias = true
         mShowPaint.style = Paint.Style.FILL
         mShowPaint.color = Color.WHITE
@@ -116,7 +116,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         )
         mPaint.style = Paint.Style.STROKE
         mPaint.shader = sweepGradient
-        mPaint.strokeWidth = 40.0F
+        mPaint.strokeWidth = dp2px(20f)
         val ringRect = RectF(
             (-(measuredWidth - (paddingLeft + paddingRight)) / 2).toFloat(),
             (-(measuredHeight - (paddingTop + paddingBottom)) / 2).toFloat(),
@@ -161,7 +161,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
             -measureTextWidth / 2,
             -(mPaint.descent() - mPaint.ascent()) / 2
                     - ((measuredHeight - (paddingTop + paddingBottom)) / 2).toFloat()
-                    - 24,
+                    - dp2px(10f),
             mPaint
         )
         canvas.restore()
@@ -169,8 +169,8 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     private val drawScaleLine = { canvas: Canvas, i: Int ->
         canvas.save()
         canvas.rotate((i - 10) * (270f / 20))
-        val bottom = -((measuredHeight - (paddingTop + paddingBottom)) / 2).toFloat() - 44
-        val top = bottom - 20
+        val bottom = -((measuredHeight - (paddingTop + paddingBottom)) / 2).toFloat() - dp2px(20f)
+        val top = bottom - dp2px(10f)
         val left = -2f
         val right = +2f
         val rectF = RectF(left, top, right, bottom)
@@ -210,7 +210,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
             (mPoint.y + measuredWidth / 2f).toInt()
         )
         mPaint.color = pixel
-        canvas.drawCircle(mPoint.x, mPoint.y, 30f, mPaint)
+        canvas.drawCircle(mPoint.x, mPoint.y, dp2px(15f), mPaint)
         canvas.restore()
 
     }
@@ -229,7 +229,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-         scaleGestureDetector.onTouchEvent(event)
+        scaleGestureDetector.onTouchEvent(event)
         gestureDetector.onTouchEvent(event)
         return true
     }
@@ -296,4 +296,19 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         )
         return pointF
     }
+
+    private fun dp2px(dp: Float): Float {
+        val density: Float = context.resources.displayMetrics.density
+        return dp * density
+    }
+
+    /**
+     * 将sp值转换为px值，保证文字大小不变
+     *
+     */
+    fun sp2px(sp: Float): Float {
+        val fontScale = context.resources.displayMetrics.scaledDensity
+        return sp * fontScale
+    }
+
 }

@@ -13,7 +13,7 @@ import com.example.kotlionstudy.R
 /**
  * @author BaoQi
  * Date : 2021/3/7
- * Des:
+ * Des:https://juejin.cn/post/6844903509263908871
  */
 class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     View(context, attrs, defStyleAttr) {
