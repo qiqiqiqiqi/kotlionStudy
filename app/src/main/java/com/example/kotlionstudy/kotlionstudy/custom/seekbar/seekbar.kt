@@ -306,7 +306,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 将sp值转换为px值，保证文字大小不变
      *
      */
-    fun sp2px(sp: Float): Float {
+    private fun sp2px(sp: Float): Float {
         val fontScale = context.resources.displayMetrics.scaledDensity
         return sp * fontScale
     }
