@@ -6,10 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.example.kotlionstudy.kotlionstudy.custom.seekbar.CircularSeekBar
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+   <!-- <com.example.kotlionstudy.kotlionstudy.custom.seekbar.CircularSeekBar
+        android:layout_width="600dp"
+        android:layout_height="600dp"
         android:padding="28dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <com.example.kotlionstudy.kotlionstudy.custom.scale.ScaleMap
+        android:layout_width="600dp"
+        android:layout_height="600dp"
+        android:background="#ffff00"
+        android:padding="28dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -5,7 +5,6 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -63,17 +62,18 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         mShowPaint.style = Paint.Style.FILL
         mShowPaint.color = Color.WHITE
         scaleGestureDetector = ScaleGestureDetector(context, this)
-        gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-            override fun onScroll(
-                e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float
-            ): Boolean {
-                val calculatePosition = calculatePosition(PointF(e2.x, e2.y))
-                mPoint.set(calculatePosition)
-                invalidate()
-                return super.onScroll(e1, e2, distanceX, distanceY)
-            }
+        gestureDetector =
+            GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onScroll(
+                    e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float
+                ): Boolean {
+                    val calculatePosition = calculatePosition(PointF(e2.x, e2.y))
+                    mPoint.set(calculatePosition)
+                    invalidate()
+                    return super.onScroll(e1, e2, distanceX, distanceY)
+                }
 
-        })
+            })
 
 
     }
@@ -89,7 +89,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        bitmapCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        bitmapCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bitmapCanvas.save()
         bitmapCanvas.translate(
             mCenterPoint.x,
@@ -229,7 +229,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        // scaleGestureDetector.onTouchEvent(event)
+         scaleGestureDetector.onTouchEvent(event)
         gestureDetector.onTouchEvent(event)
         return true
     }
