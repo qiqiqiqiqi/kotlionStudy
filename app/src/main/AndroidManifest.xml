@@ -10,11 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KotlionStudy">
         <activity android:name=".MainActivity">
-            <intent-filter>
+                        <intent-filter>
+                            <action android:name="android.intent.action.MAIN" />
+
+                            <category android:name="android.intent.category.LAUNCHER" />
+                        </intent-filter>
+        </activity>
+        <activity android:name=".kotlionstudy.custom.matrix.TestTransformMatrixActivity">
+          <!--  <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
     </application>
 

@@ -10,11 +10,13 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import com.example.kotlionstudy.R
 
+
 /**
  * @author BaoQi
  * Date : 2021/3/7
- * Des:https://juejin.cn/post/6844903509263908871
+ *
  */
+//https://juejin.cn/post/6844903509263908871
 class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     View(context, attrs, defStyleAttr) {
     constructor(context: Context) : this(context, null, 0)
@@ -24,9 +26,10 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     private val mapBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.scale)
     private val pointBitmap: Bitmap =
         BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
-    private val mSuppMatrix: Matrix = Matrix()
-    private val mDrawMatrix: Matrix = Matrix()
+    private val mScaleDrawMatrix: Matrix = Matrix()
     private var scaleGestureDetector: ScaleGestureDetector
+    private var scaleValue: Float = 1.0f
+
 
     init {
         scaleGestureDetector = ScaleGestureDetector(
@@ -45,13 +48,15 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         return false
                     }
 
-                    mSuppMatrix.postScale(
+                    mScaleDrawMatrix.postScale(
                         scaleFactor,
                         scaleFactor,
-                        measuredWidth / 2f,
-                        measuredHeight / 2f
+                        0f,
+                        0f
                     )
-                    mDrawMatrix.set(mSuppMatrix)
+                    val matrixValues = FloatArray(9)
+                    mScaleDrawMatrix.getValues(matrixValues)
+                    scaleValue = matrixValues[0]
                     invalidate()
                     return true
                 }
@@ -77,10 +82,13 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         this@ScaleMap.javaClass.simpleName,
                         "onScroll():e2.x=${e2.x},e2.y=${e2.y}"
                     )
-                    mSuppMatrix.preTranslate(-distanceX, -distanceY)
-                    mDrawMatrix.set(mSuppMatrix)
+                    //先平移，再缩放，并且平移的大小要除以当前缩放
+                    mScaleDrawMatrix.preTranslate(
+                        -distanceX / scaleValue,
+                        -distanceY / scaleValue
+                    )
                     invalidate()
-                    return super.onScroll(e1, e2, distanceX, distanceY)
+                    return true
                 }
             })
     }
@@ -91,6 +99,20 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
         drawMap(canvas)
 
+    }
+
+    private fun printMatrix(matrix: Matrix) {
+        // 下面的代码是为了查看matrix中的元素
+        val matrixValues = FloatArray(9)
+        matrix.getValues(matrixValues)
+        for (i in 0..2) {
+            var temp = String()
+            for (j in 0..2) {
+                temp += matrixValues[3 * i + j].toString() + "\t"
+            }
+            Log.e(this@ScaleMap.javaClass.simpleName, "printMatrix():temp=$temp")
+        }
+        Log.d(this@ScaleMap.javaClass.simpleName, "printMatrix()")
     }
 
     private fun drawMap(canvas: Canvas) {
@@ -125,15 +147,18 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
         val src = Rect(0, 0, mapBitmap.width, mapBitmap.height)
         val dest = RectF(left, top, right, bottom)
-        canvas.concat(mDrawMatrix)
+        canvas.concat(mScaleDrawMatrix)
+        printMatrix(mScaleDrawMatrix)
         canvas.drawBitmap(mapBitmap, src, dest, null)
+        //这个icon不缩放
+        canvas.scale(1 / scaleValue, 1 / scaleValue)
         canvas.drawBitmap(pointBitmap, -pointBitmap.width / 2f, -pointBitmap.height / 2f, null)
         canvas.restore()
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        gestureDetector.onTouchEvent(event)
         scaleGestureDetector.onTouchEvent(event)
+        gestureDetector.onTouchEvent(event)
         return true
     }
 
@@ -145,7 +170,7 @@ class CoordinateTool {
         /**
          * 转换slam坐标至地图像素坐标
          *
-         * @param {slamOffset} slam坐标x
+         * @param {slamOffset} slam坐标x  137,296
          * @param {number} height 所在地图高度
          * @param {Coordinate} origin 地图原点信息
          * @param {number} resolution 地图分辨率

@@ -31,14 +31,16 @@ class CircularSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     private var mRadius by Delegates.notNull<Float>()
     private var mAngel = 135.0
     private val canvasBitmap by lazy {
-        Bitmap.createBitmap(
+        val createBitmap = Bitmap.createBitmap(
             measuredWidth,
             measuredHeight,
             Bitmap.Config.ARGB_8888
         )
+        createBitmap
     }
     private val bitmapCanvas by lazy {
-        Canvas(canvasBitmap)
+        val canvas = Canvas(canvasBitmap)
+        canvas
     }
 
     private val mRingColors: IntArray = intArrayOf(
