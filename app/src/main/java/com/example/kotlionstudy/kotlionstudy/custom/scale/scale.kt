@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import com.example.kotlionstudy.R
+import kotlin.properties.Delegates
 
 
 /**
@@ -23,13 +24,14 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     private val gestureDetector: GestureDetector
-    private val mapBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.scale)
+    private var mapBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.scale)
     private val pointBitmap: Bitmap =
         BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
     private val mScaleDrawMatrix: Matrix = Matrix()
     private var scaleGestureDetector: ScaleGestureDetector
     private var scaleValue: Float = 1.0f
-
+    private var width: Float by Delegates.notNull()
+    private var height: Float by Delegates.notNull()
 
     init {
         scaleGestureDetector = ScaleGestureDetector(
@@ -96,8 +98,8 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        mapBitmap?.let { drawMap(canvas) }
 
-        drawMap(canvas)
 
     }
 
@@ -147,13 +149,27 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
         val src = Rect(0, 0, mapBitmap.width, mapBitmap.height)
         val dest = RectF(left, top, right, bottom)
+        width = dest.width()
+        height = dest.height()
         canvas.concat(mScaleDrawMatrix)
         printMatrix(mScaleDrawMatrix)
         canvas.drawBitmap(mapBitmap, src, dest, null)
-        //这个icon不缩放
-        canvas.scale(1 / scaleValue, 1 / scaleValue)
+        val pointF = offset()
+        canvas.translate(pointF.x, pointF.y)
+        if (scaleValue > 1) {
+            canvas.scale(1 / scaleValue, 1 / scaleValue)
+
+        }
+
         canvas.drawBitmap(pointBitmap, -pointBitmap.width / 2f, -pointBitmap.height / 2f, null)
         canvas.restore()
+    }
+
+    private fun offset(): PointF {
+        val pointF = PointF()
+        pointF.x = (0.75f * width - width / 2f)
+        pointF.y = (0.75f * height - height / 2f)
+        return pointF
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -178,8 +194,8 @@ class CoordinateTool {
         fun slam2pixel(
             slamOffset: PointF,
             origin: PointF,
-            height: Float,
-            resolution: Float
+            height: Float = 658f,
+            resolution: Float = 0.05f
         ): PointF {
             if (resolution <= 0) {
                 return PointF(0f, 0f)
@@ -188,8 +204,8 @@ class CoordinateTool {
                 (slamOffset.x - origin.x) / resolution,
                 height - (slamOffset.y - origin.y) / resolution
             );
-            Log.d("CoordinateTool", "slam2pixel():offset=$offset");
-            return offset;
+            Log.d("CoordinateTool", "slam2pixel():offset=$offset")
+            return offset
         }
     }
 
