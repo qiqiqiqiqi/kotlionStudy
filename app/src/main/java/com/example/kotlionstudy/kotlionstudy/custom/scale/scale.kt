@@ -31,15 +31,23 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             R.mipmap.scale
         )
     ) { _, _, _ ->
+        srcDest = srcDest()
         invalidate()
     }
-    private val pointBitmap: Bitmap =
-        BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
+    private val pointBitmap: Bitmap by Delegates.observable(
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.mipmap.ic_launcher
+        )
+    ) { _, _, _ ->
+        invalidate()
+    }
+    private var srcDest by Delegates.notNull<Pair<Rect, RectF>>()
     private val mScaleDrawMatrix: Matrix = Matrix()
     private var scaleGestureDetector: ScaleGestureDetector
     private var scaleValue: Float = 1.0f
-    private var width: Float by Delegates.notNull()
-    private var height: Float by Delegates.notNull()
+    private var destWidth: Float by Delegates.notNull()
+    private var destHeight: Float by Delegates.notNull()
 
     init {
         scaleGestureDetector = ScaleGestureDetector(
@@ -103,12 +111,14 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             })
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        srcDest = srcDest()
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         mapBitmap?.let { drawMap(canvas) }
-
-
     }
 
     private fun printMatrix(matrix: Matrix) {
@@ -128,6 +138,22 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     private fun drawMap(canvas: Canvas) {
         canvas.save()
         canvas.translate(measuredWidth / 2f, measuredHeight / 2f)
+        val (src, dest) = srcDest
+        canvas.concat(mScaleDrawMatrix)
+        printMatrix(mScaleDrawMatrix)
+        canvas.drawBitmap(mapBitmap, src, dest, null)
+        val pointF = offset()
+        canvas.translate(pointF.x, pointF.y)
+        if (scaleValue > 1) {
+            canvas.scale(1 / scaleValue, 1 / scaleValue)
+        }
+        canvas.drawBitmap(pointBitmap, -pointBitmap.width / 2f, -pointBitmap.height / 2f, null)
+        canvas.restore()
+    }
+
+    private fun srcDest(): Pair<Rect, RectF> {
+        Log.d(this@ScaleMap.javaClass.simpleName, "srcDest()")
+
         val mapBitmapWHRatio: Float = (mapBitmap.width.toFloat() / mapBitmap.height)
         val widgetWHRatio: Float = (measuredWidth.toFloat() / measuredHeight)
         val left: Float
@@ -157,26 +183,15 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
         val src = Rect(0, 0, mapBitmap.width, mapBitmap.height)
         val dest = RectF(left, top, right, bottom)
-        width = dest.width()
-        height = dest.height()
-        canvas.concat(mScaleDrawMatrix)
-        printMatrix(mScaleDrawMatrix)
-        canvas.drawBitmap(mapBitmap, src, dest, null)
-        val pointF = offset()
-        canvas.translate(pointF.x, pointF.y)
-        if (scaleValue > 1) {
-            canvas.scale(1 / scaleValue, 1 / scaleValue)
-
-        }
-
-        canvas.drawBitmap(pointBitmap, -pointBitmap.width / 2f, -pointBitmap.height / 2f, null)
-        canvas.restore()
+        destWidth = dest.width()
+        destHeight = dest.height()
+        return Pair(src, dest)
     }
 
     private fun offset(): PointF {
         val pointF = PointF()
-        pointF.x = (0.75f * width - width / 2f)
-        pointF.y = (0.75f * height - height / 2f)
+        pointF.x = (0.75f * destWidth - destWidth / 2f)
+        pointF.y = (0.75f * destHeight - destHeight / 2f)
         return pointF
     }
 
@@ -212,7 +227,7 @@ class CoordinateTool {
             val offset = PointF(
                 (slamOffset.x - origin.x) / resolution,
                 height - (slamOffset.y - origin.y) / resolution
-            );
+            )
             Log.d("CoordinateTool", "slam2pixel():offset=$offset")
             return offset
         }
