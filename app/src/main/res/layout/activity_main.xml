@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.kotlionstudy.kotlionstudy.custom.scale.ScaleMap
+        android:id="@+id/scale_map"
         android:layout_width="600dp"
         android:layout_height="600dp"
         android:background="#ffff00"

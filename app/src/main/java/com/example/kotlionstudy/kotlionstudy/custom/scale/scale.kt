@@ -25,10 +25,10 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     private val gestureDetector: GestureDetector
-    private var mapBitmap: Bitmap by Delegates.observable(
+     var mapBitmap: Bitmap by Delegates.observable(
         BitmapFactory.decodeResource(
             context.resources,
-            R.mipmap.scale
+            R.mipmap.defualt_map
         )
     ) { _, _, _ ->
         srcDest = srcDest()
@@ -37,7 +37,7 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     private val pointBitmap: Bitmap by Delegates.observable(
         BitmapFactory.decodeResource(
             context.resources,
-            R.mipmap.ic_launcher
+            R.mipmap.cleaning_icon_location
         )
     ) { _, _, _ ->
         invalidate()
@@ -152,7 +152,6 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     }
 
     private fun srcDest(): Pair<Rect, RectF> {
-        Log.d(this@ScaleMap.javaClass.simpleName, "srcDest()")
 
         val mapBitmapWHRatio: Float = (mapBitmap.width.toFloat() / mapBitmap.height)
         val widgetWHRatio: Float = (measuredWidth.toFloat() / measuredHeight)
@@ -190,8 +189,8 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     private fun offset(): PointF {
         val pointF = PointF()
-        pointF.x = (0.75f * destWidth - destWidth / 2f)
-        pointF.y = (0.75f * destHeight - destHeight / 2f)
+        pointF.x = (0.5f * destWidth - destWidth / 2f)
+        pointF.y = (0.5f * destHeight - destHeight / 2f)
         return pointF
     }
 
