@@ -18,13 +18,21 @@ import kotlin.properties.Delegates
  *
  */
 //https://juejin.cn/post/6844903509263908871
+//https://lumeng.blog.csdn.net/article/details/109075416
 class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     View(context, attrs, defStyleAttr) {
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     private val gestureDetector: GestureDetector
-    private var mapBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.scale)
+    private var mapBitmap: Bitmap by Delegates.observable(
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.mipmap.scale
+        )
+    ) { _, _, _ ->
+        invalidate()
+    }
     private val pointBitmap: Bitmap =
         BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
     private val mScaleDrawMatrix: Matrix = Matrix()
@@ -177,6 +185,7 @@ class ScaleMap(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         gestureDetector.onTouchEvent(event)
         return true
     }
+
 
 }
 
