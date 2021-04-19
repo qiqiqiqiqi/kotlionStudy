@@ -34,9 +34,13 @@ class Producer<out T>(private val source: T) {
 /**
  * in 使得一个类型参数逆变，逆变类型参数只能用作输入，可以作为入参的类型但是无法作为返回值的类型：
  */
-class ProducerA<in T>(){
-    fun produce(t:T){
+class ProducerA<in T> {
+    fun produce(t: T) {
         println("ProducerA--produce():t=$t")
     }
 }
+
+
+class BaseBo
+
 
