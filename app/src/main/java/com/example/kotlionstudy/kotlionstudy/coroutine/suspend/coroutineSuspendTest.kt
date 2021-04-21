@@ -14,7 +14,6 @@ import kotlin.coroutines.intrinsics.*
  */
 suspend fun main() {
 //    log("hello=${hello()}")
-    println()
     log(1)
     log(returnSuspended())
     log(2)
@@ -32,7 +31,7 @@ suspend fun returnSuspended() = suspendCoroutineUninterceptedOrReturn<String> { 
     COROUTINE_SUSPENDED
 }
 
-suspend fun returnImmediately() = suspendCoroutineUninterceptedOrReturn<String> {
+suspend fun returnImmediately() = suspendCoroutineUninterceptedOrReturn<String> { continuation ->
     log(1)
     "Return immediately."
 }

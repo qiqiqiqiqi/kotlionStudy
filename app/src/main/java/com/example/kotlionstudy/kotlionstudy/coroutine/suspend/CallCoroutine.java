@@ -88,7 +88,7 @@ public class CallCoroutine {
 
         @Override
         public void resumeWith(@NotNull Object o) {
-            System.out.println("resumeWith():o=" + o);
+            log("ContinuationImpl--resumeWith():o=" + o);
             try {
                 Object result = o;
                 switch (label) {
@@ -99,9 +99,11 @@ public class CallCoroutine {
                         if (isSuspended(result)) return;
                     }
                     case 1: {
-                        log(result);
+                        log(result);//
                         log(2);
                         result = delay(1000, this);
+                        log("ContinuationImpl--resumeWith():delay():result=" + result);
+
                         label++;
                         if (isSuspended(result)) return;
                     }
@@ -138,6 +140,8 @@ public class CallCoroutine {
 
         @Override
         public void resumeWith(@NotNull Object result) {
+            System.out.println("RunSuspend--resumeWith():result=" + result);
+
             synchronized (this) {
                 this.result = result;
                 notifyAll(); // 协程已经结束，通知下面的 wait() 方法停止阻塞
@@ -148,8 +152,11 @@ public class CallCoroutine {
             synchronized (this) {
                 while (true) {
                     Object result = this.result;
-                    if (result == null)
-                        wait(); // 调用了 Object.wait()，阻塞当前线程，在 notify 或者 notifyAll 调用时返回
+                    if (result == null) {
+                        log("RunSuspend--await():result=" + result);
+
+                        wait();
+                    }// 调用了 Object.wait()，阻塞当前线程，在 notify 或者 notifyAll 调用时返回
                     else if (result instanceof Throwable) {
                         throw (Throwable) result;
                     } else return;
