@@ -25,20 +25,21 @@ import static kotlinx.coroutines.ResumeModeKt.MODE_CANCELLABLE;
  * Des:
  */
 public class CallCoroutine {
-    public static void block(CancellableContinuation<Object> cancellableContinuation) {
-    }
 
-    public static void main(String[] args) throws Throwable {
-
+    public static void main(String[] args) {
         //  callHello();
         call();
     }
 
-    private static void call() throws Throwable {
-        RunSuspend runSuspend = new RunSuspend();
-        ContinuationImpl table = new ContinuationImpl(runSuspend);
-        table.resumeWith(Unit.INSTANCE);
-        runSuspend.await();
+    private static void call() {
+        try {
+            RunSuspend runSuspend = new RunSuspend();
+            ContinuationImpl table = new ContinuationImpl(runSuspend);
+            table.resumeWith(Unit.INSTANCE);
+            runSuspend.await();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     private static void callHello() {
@@ -71,7 +72,10 @@ public class CallCoroutine {
         log("The result is " + o);
     }
 
-
+    /**
+     * 1.协程的挂起函数本质上就是一个回调，回调类型就是 Continuation
+     * 2.协程体的执行就是一个状态机，每一次遇到挂起函数，都是一次状态转移，就像我们前面例子中的 label 不断的自增来实现状态流转一样
+     */
     public static class ContinuationImpl implements Continuation<Object> {
 
         private int label = 0;
@@ -86,9 +90,18 @@ public class CallCoroutine {
             return EmptyCoroutineContext.INSTANCE;
         }
 
+        /**
+         * 所有的挂起都用了同一个回调来返回值，每次返回都是一次状态的转移，保证了代码的顺序执行
+         * <p>
+         * ？？？
+         * 挂起的返回值是如何返回的 {@link RunSuspend#resumeWith}
+         * ？？？
+         *
+         * @param o
+         */
         @Override
         public void resumeWith(@NotNull Object o) {
-            log("ContinuationImpl--resumeWith():o=" + o);
+            log("ContinuationImpl--resumeWith():o=" + o + "，lable=" + label);
             try {
                 Object result = o;
                 switch (label) {
@@ -98,22 +111,20 @@ public class CallCoroutine {
                         label++;
                         if (isSuspended(result)) return;
                     }
-                    case 1: {
+                    case 1: {//returnSuspended的回调会执行到这儿
                         log(result);//
                         log(2);
                         result = delay(1000, this);
-                        log("ContinuationImpl--resumeWith():delay():result=" + result);
-
                         label++;
                         if (isSuspended(result)) return;
                     }
-                    case 2: {
+                    case 2: {// delay完成后会返回resumeWith(kotlin.Unit）执行到这儿
                         log(3);
                         result = returnImmediately(this);
                         label++;
                         if (isSuspended(result)) return;
                     }
-                    case 3: {
+                    case 3: {//lable=2时没有挂起，会执行到lable=3处
                         log(result);
                         log(4);
                     }
@@ -140,7 +151,7 @@ public class CallCoroutine {
 
         @Override
         public void resumeWith(@NotNull Object result) {
-            System.out.println("RunSuspend--resumeWith():result=" + result);
+            log("RunSuspend--resumeWith():result=" + result);
 
             synchronized (this) {
                 this.result = result;
@@ -159,7 +170,10 @@ public class CallCoroutine {
                     }// 调用了 Object.wait()，阻塞当前线程，在 notify 或者 notifyAll 调用时返回
                     else if (result instanceof Throwable) {
                         throw (Throwable) result;
-                    } else return;
+                    } else {
+                        log("RunSuspend--await():result=" + result);
+                        return;
+                    }
                 }
             }
         }

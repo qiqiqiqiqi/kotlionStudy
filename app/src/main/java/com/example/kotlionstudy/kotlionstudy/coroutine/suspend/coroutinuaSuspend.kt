@@ -9,6 +9,11 @@ import kotlin.coroutines.intrinsics.*
  * @author BaoQi
  * Date : 2021/4/18
  * Des:https://juejin.cn/post/6844903854253834248
+ *
+ *  挂起是有返回值的
+ *  在Java中调用挂起函数可以拿到COROUTINE_SUSPENDED返回值
+ *  在kotlin中调用返回COROUTINE_SUSPENDED代表要挂起了
+ *
  */
 suspend fun hello() = suspendCoroutineUninterceptedOrReturn<Int> { continuation ->
     log(1)
