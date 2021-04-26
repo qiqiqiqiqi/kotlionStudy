@@ -15,11 +15,13 @@ import kotlin.coroutines.intrinsics.*
 suspend fun main() {
 //    log("hello=${hello()}")
     log(1)
-    log(returnSuspended())
+    val returnImmediately = returnImmediately()
+    log(returnImmediately)
     log(2)
     delay(1000)
     log(3)
-    log(returnImmediately())
+    val returnSuspended = returnSuspended()
+    log(returnSuspended)
     log(4)
 }
 
